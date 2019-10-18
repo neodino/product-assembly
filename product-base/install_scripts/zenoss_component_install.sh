@@ -58,9 +58,10 @@ run "tar -C ${ZENHOME} -xzvf /tmp/prodbin* --exclude=${ZENHOME}/Products/ZenMode
 run "mkdir -p ${ZENHOME}/etc/supervisor ${ZENHOME}/var/zauth ${ZENHOME}/libexec"
 run "ln -s ${ZENHOME}/etc/zauth/zauth_supervisor.conf ${ZENHOME}/etc/supervisor/zauth_supervisor.conf"
 
-run "pip install --no-index ${ZENHOME}/dist/*.whl"
+run "[ -d ${ZENHOME}/dist -a ! -z \"$(find ${ZENHOME}/dist/ -type f -name \*.whl)\" ] && pip install --no-index ${ZENHOME}/dist/*.whl || true"
 run "mv ${ZENHOME}/legacy/sitecustomize.py ${ZENHOME}/lib/python2.7/"
 run "rm -rf ${ZENHOME}/dist ${ZENHOME}/legacy"
+run "[ -f ${ZENHOME}/setup.py ] && pip install -e ${ZENHOME} || echo No setup.py"
 source ${ZENHOME}/install_scripts/versions.sh 
 run "sed -e 's/%VERSION_STRING%/${VERSION}/g; s/%BUILD_NUMBER%/${BUILD_NUMBER}/g' ${ZENHOME}/Products/ZenModel/ZVersion.py.in > ${ZENHOME}/Products/ZenModel/ZVersion.py"
 
