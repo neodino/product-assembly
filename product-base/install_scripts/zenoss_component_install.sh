@@ -58,12 +58,9 @@ run "tar -C ${ZENHOME} -xzvf /tmp/prodbin* --exclude=${ZENHOME}/Products/ZenMode
 run "mkdir -p ${ZENHOME}/etc/supervisor ${ZENHOME}/var/zauth ${ZENHOME}/libexec"
 run "ln -s ${ZENHOME}/etc/zauth/zauth_supervisor.conf ${ZENHOME}/etc/supervisor/zauth_supervisor.conf"
 
-run "[ -d ${ZENHOME}/dist -a ! -z \"$(find ${ZENHOME}/dist/ -type f -name \*.whl)\" ] && pip install --no-index ${ZENHOME}/dist/*.whl || true"
 run "mv ${ZENHOME}/legacy/sitecustomize.py ${ZENHOME}/lib/python2.7/"
 run "rm -rf ${ZENHOME}/dist ${ZENHOME}/legacy"
 run "[ -f ${ZENHOME}/setup.py ] && pip install -e ${ZENHOME} || echo No setup.py"
-source ${ZENHOME}/install_scripts/versions.sh 
-run "sed -e 's/%VERSION_STRING%/${VERSION}/g; s/%BUILD_NUMBER%/${BUILD_NUMBER}/g' ${ZENHOME}/Products/ZenModel/ZVersion.py.in > ${ZENHOME}/Products/ZenModel/ZVersion.py"
 
 # Install MetricConsumer
 download_artifact "zenoss.metric.consumer"
@@ -149,12 +146,6 @@ cp -R /tmp/modelindex/zenoss/modelindex/solr/configsets /opt/solr/server/solr/
 chmod -R g+rw,o+r,+X ${ZENHOME}/*
 
 # TODO add upgrade templates to /root  - probably done in core/rm image builds
-
-# TODO REMOVE THIS AFTER PRODBIN IS UPDATED TO FILTER OUT MIGRATE TESTS
-rm -rf ${ZENHOME}/Products/ZenModel/migrate/tests
-
-# TODO REMOVE THIS AFTER PRODBIN IS UPDATED TO FILTER OUT ZenUITests-based TESTS
-rm -rf ${ZENHOME}/Products/ZenUITests
 
 echo "Cleaning up after install..."
 find ${ZENHOME} -name \*.py[co] -delete
