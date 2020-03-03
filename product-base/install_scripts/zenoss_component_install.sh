@@ -49,18 +49,9 @@ function download_artifact
 }
 
 # Install Prodbin
-download_artifact "zenoss-prodbin"
-run "tar -C ${ZENHOME} -xzvf /tmp/prodbin* --exclude=${ZENHOME}/Products/ZenModel/migrate/tests --exclude=${ZENHOME}/Products/ZenUITests"
-# rm -rf ${ZENHOME}/Products/ZenModel/migrate/tests
-# rm -rf ${ZENHOME}/Products/ZenUITests
-
-# TODO: remove this and make sure the tar file contains the proper links
-run "mkdir -p ${ZENHOME}/etc/supervisor ${ZENHOME}/var/zauth ${ZENHOME}/libexec"
-run "ln -s ${ZENHOME}/etc/zauth/zauth_supervisor.conf ${ZENHOME}/etc/supervisor/zauth_supervisor.conf"
-
-run "mv ${ZENHOME}/legacy/sitecustomize.py ${ZENHOME}/lib/python2.7/"
-run "rm -rf ${ZENHOME}/dist ${ZENHOME}/legacy"
-run "[ -f ${ZENHOME}/setup.py ] && pip install -e ${ZENHOME} || echo No setup.py"
+artifactDownload "zenoss-prodbin"
+prodbin_installer=$(ls /tmp/prodbin*.run)
+run "${prodbin_installer}"
 
 # Install MetricConsumer
 download_artifact "zenoss.metric.consumer"
