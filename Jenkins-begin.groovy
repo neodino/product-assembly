@@ -115,7 +115,6 @@ node('build-zenoss-product') {
         }
 
         stage('Build Images') {
-
             dir("${TARGET_PRODUCT}") {
                 withEnv(["MATURITY=${MATURITY}", "BUILD_NUMBER=${PRODUCT_BUILD_NUMBER}"]) {
                     productImageTag = sh(returnStdout: true, script: "make product-image-tag").trim()
@@ -144,20 +143,21 @@ node('build-zenoss-product') {
         }
 
         stage('Push Images') {
-            docker.withRegistry('https://gcr.io', 'gcr:zing-registry-188222') {
-                productImage = docker.image(productImageID)
-                productImage.push()
-                if (PINNED == "true") {
-                    //add a pinned tag so we know if this image is viable for promotion
-                    productImage.push("${productImageTag}-pinned")
-                }
-                mariadbImage = docker.image(mariadbImageID)
-                mariadbImage.push()
-                if (PINNED == "true") {
-                    //add a pinned tag so we know if this image is viable for promotion
-                    mariadbImage.push("${mariadbImageTag}-pinned")
-                }
-            }
+            echo "Skipped pushing images"
+            // docker.withRegistry('https://gcr.io', 'gcr:zing-registry-188222') {
+            //     productImage = docker.image(productImageID)
+            //     productImage.push()
+            //     if (PINNED == "true") {
+            //         //add a pinned tag so we know if this image is viable for promotion
+            //         productImage.push("${productImageTag}-pinned")
+            //     }
+            //     mariadbImage = docker.image(mariadbImageID)
+            //     mariadbImage.push()
+            //     if (PINNED == "true") {
+            //         //add a pinned tag so we know if this image is viable for promotion
+            //         mariadbImage.push("${mariadbImageTag}-pinned")
+            //     }
+            // }
         }
 
         stage("Build service template package") {
@@ -201,12 +201,13 @@ node('build-zenoss-product') {
         }
 
         stage('Upload service template package') {
-            googleStorageUpload(
-                bucket: "gs://cse_artifacts/${TARGET_PRODUCT}/${MATURITY}/${ZENOSS_VERSION}/${PRODUCT_BUILD_NUMBER}",
-                credentialsId: 'zing-registry-188222',
-                pathPrefix: 'artifacts/',
-                pattern: 'artifacts/*tgz'
-            )
+            echo "Skipped uploading template package"
+            // googleStorageUpload(
+            //     bucket: "gs://cse_artifacts/${TARGET_PRODUCT}/${MATURITY}/${ZENOSS_VERSION}/${PRODUCT_BUILD_NUMBER}",
+            //     credentialsId: 'zing-registry-188222',
+            //     pathPrefix: 'artifacts/',
+            //     pattern: 'artifacts/*tgz'
+            // )
         }
 
         stage('3rd-party Python packages check') {
